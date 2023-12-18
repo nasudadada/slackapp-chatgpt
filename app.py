@@ -1,10 +1,12 @@
 import os
 import re
 import time
+from datetime import timedelta
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain.schema import LLMResult
+from langchain.memory import MomentoChatMessageHistory
+from langchain.schema import HumanMessage, LLMResult, SystemMessage
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from typing import Any
@@ -48,8 +50,24 @@ def handle_mention(event, say):
     thread_ts = event["ts"]
     message = re.sub("<@.*", "", event["text"])
 
+    id_ts = event["ts"]
+    if "thread_ts" in event:
+        id_ts = event["ts"]
+
     result = say("¥n¥nTyping...", thread_ts=thread_ts)
     ts = result["ts"]
+
+    history = MomentoChatMessageHistory.from_client_params(
+        id_ts,
+        os.environ["MOMENTO_CACHE"],
+        timedelta(hours=int(os.environ["MOMENTO_TTL"])),
+    )
+
+    messages = [SystemMessage(content="you are a good assistant.")]
+    messages.extend(history.messages)
+    messages.append(HumanMessage(content=message))
+
+    history.add_user_message(message)
 
     callback = SlackStreamingCallbackHandler(channel=channel, ts=ts)
     llm = ChatOpenAI(
@@ -59,8 +77,8 @@ def handle_mention(event, say):
         callbacks=[callback],
     )
 
-    llm.predict(message)
-
+    ai_message = llm(messages)
+    history.add_message(ai_message)
 
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()

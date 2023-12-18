@@ -11,6 +11,8 @@ slack-bolt = "^1.18.1"
 python-dotenv = "^1.0.0"
 langchain = "^0.0.350"
 openai = "^1.4.0"
+moment = "^0.12.1"
+momento = "^1.16.0"
 
 
 [build-system]
