@@ -54,7 +54,7 @@ def handle_mention(event, say):
     if "thread_ts" in event:
         id_ts = event["ts"]
 
-    result = say("¥n¥nTyping...", thread_ts=thread_ts)
+    result = say("\n\nTyping...", thread_ts=thread_ts)
     ts = result["ts"]
 
     history = MomentoChatMessageHistory.from_client_params(
