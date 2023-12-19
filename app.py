@@ -48,7 +48,7 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
 def handle_mention(event, say):
     channel = event["channel"]
     thread_ts = event["ts"]
-    message = re.sub("<@.*", "", event["text"])
+    message = re.sub("<@.*>", "", event["text"])
 
     id_ts = event["ts"]
     if "thread_ts" in event:
@@ -79,6 +79,7 @@ def handle_mention(event, say):
 
     ai_message = llm(messages)
     history.add_message(ai_message)
+
 
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
