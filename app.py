@@ -1,3 +1,5 @@
+import json
+import logging
 import os
 import re
 import time
@@ -8,10 +10,17 @@ from langchain.callbacks.base import BaseCallbackHandler
 from langchain.memory import MomentoChatMessageHistory
 from langchain.schema import HumanMessage, LLMResult, SystemMessage
 from slack_bolt import App
+from slack_bolt.adapter.aws_lambda import SlackRequestHandler
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from typing import Any
 
 load_dotenv()
+
+SlackRequestHandler.clear_all_long_handlers()
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 CHAT_UPDATE_INTERVAL_SEC = 1
 
@@ -86,3 +95,15 @@ app.event("app_mention")(ack=just_ack, lazy=[handle_mention])
 
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+
+def hander(event, context):
+    logger.info("handler called")
+    header = event["headers"]
+    logger.info(json.dumps(header))
+
+    if "x-slack-retry-num" in header:
+        logger.info("SKIP > x-slack-retry-num* %s", header["x-slack-retry-num"])
+        return 200
+
+    slack_handler = SlackRequestHandler(app=app)
+    return slack_handler.handle(event, context)
