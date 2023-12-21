@@ -38,16 +38,23 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
     def __init__(self, channel, ts):
         self.channel = channel
         self.ts = ts
+        self.interval = CHAT_UPDATE_INTERVAL_SEC
+        self.update_count = 0
 
     def on_llm_new_token(self, token: str, **kwargs):
         self.message += token
 
         now = time.time()
         if now - self.last_send_time > CHAT_UPDATE_INTERVAL_SEC:
-            self.last_send_time = now
+            
             app.client.chat_update(
                 channel=self.channel, ts=self.ts, text=f"{self.message}..."
             )
+            self.last_send_time = now
+            self.update_count += 1
+
+            if self.update_count / 10 > self.interval:
+                self.interval = self.interval * 2
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any):
         app.client.chat_update(channel=self.channel, ts=self.ts, text=self.message)
@@ -95,6 +102,7 @@ app.event("app_mention")(ack=just_ack, lazy=[handle_mention])
 
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+
 
 def hander(event, context):
     logger.info("handler called")
