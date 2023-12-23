@@ -16,7 +16,7 @@ from typing import Any
 
 load_dotenv()
 
-SlackRequestHandler.clear_all_long_handlers()
+SlackRequestHandler.clear_all_log_handlers()
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
 )
@@ -46,7 +46,6 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
 
         now = time.time()
         if now - self.last_send_time > CHAT_UPDATE_INTERVAL_SEC:
-            
             app.client.chat_update(
                 channel=self.channel, ts=self.ts, text=f"{self.message}..."
             )
@@ -57,7 +56,18 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
                 self.interval = self.interval * 2
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any):
-        app.client.chat_update(channel=self.channel, ts=self.ts, text=self.message)
+        message_context = "OpenAI APIで生成される情報は不正確または不適切な場合がありますが、当社の見解を述べるものではありません。"
+        message_blocks = [
+            {"type": "section", "text": {"type": "mrkdwn", "text": self.message}},
+            {"type": "diver"},
+            {
+                "type": "context",
+                "element": [{"type": "mrkdwn", "text": message_context}],
+            },
+        ]
+        app.client.chat_update(
+            channel=self.channel, ts=self.ts, text=self.message, blocks=message_blocks
+        )
 
 
 def handle_mention(event, say):
@@ -96,6 +106,7 @@ def handle_mention(event, say):
 
 def just_ack(ack):
     ack()
+
 
 app.event("app_mention")(ack=just_ack, lazy=[handle_mention])
 
