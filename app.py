@@ -97,7 +97,6 @@ def handle_mention(event, say):
 def just_ack(ack):
     ack()
 
-
 app.event("app_mention")(ack=just_ack, lazy=[handle_mention])
 
 if __name__ == "__main__":
