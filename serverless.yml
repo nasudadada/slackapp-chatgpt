@@ -15,17 +15,21 @@ provider:
 
 package:
   patterns:
-    - '!.venv/**'
     - '!.env'
     - '!.gitignore'
     - '!.python-version'
     - '!.git/**'
+    - '!node_modules/**'
+    - '!poetry.lock'
+    - '!pyproject.toml'
+    - '!package.json'
+    - '!package-lock.json'
 
 functions:
   app:
     name: LangChainBook-ChatGPTSlackFunction-${sls:stage}-app
     handler: app.handler
-    runtime: python3.10
+    runtime: python3.11
     memorySize: 512
     timeout: 900
     url: true
