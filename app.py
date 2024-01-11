@@ -45,9 +45,9 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
         self.message += token
 
         now = time.time()
-        if now - self.last_send_time > CHAT_UPDATE_INTERVAL_SEC:
+        if now - self.last_send_time > self.interval:
             app.client.chat_update(
-                channel=self.channel, ts=self.ts, text=f"{self.message}..."
+                channel=self.channel, ts=self.ts, text=f"{self.message}\n\nTyping..."
             )
             self.last_send_time = now
             self.update_count += 1
@@ -59,7 +59,7 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
         message_context = "OpenAI APIで生成される情報は不正確または不適切な場合がありますが、当社の見解を述べるものではありません。"
         message_blocks = [
             {"type": "section", "text": {"type": "mrkdwn", "text": self.message}},
-            {"type": "diver"},
+            {"type": "divider"},
             {
                 "type": "context",
                 "element": [{"type": "mrkdwn", "text": message_context}],
@@ -90,6 +90,7 @@ def handle_mention(event, say):
     messages = [SystemMessage(content="you are a good assistant.")]
     messages.extend(history.messages)
     messages.append(HumanMessage(content=message))
+
     history.add_user_message(message)
 
     callback = SlackStreamingCallbackHandler(channel=channel, ts=ts)
