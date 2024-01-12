@@ -63,7 +63,7 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
             {
                 "type": "context",
                 "element": [{"type": "mrkdwn", "text": message_context}],
-            },
+            }
         ]
         app.client.chat_update(
             channel=self.channel, ts=self.ts, text=self.message, blocks=message_blocks
