@@ -12,6 +12,7 @@ provider:
           Action:
             - lambda:InvokeFunction
           Resource: '*'
+          
 
 package:
   patterns:
@@ -29,7 +30,7 @@ functions:
   app:
     name: LangChainBook-ChatGPTSlackFunction-${sls:stage}-app
     handler: app.handler
-    runtime: python3.11
+    runtime: python3.10
     memorySize: 512
     timeout: 900
     url: true
