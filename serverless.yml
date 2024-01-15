@@ -13,6 +13,12 @@ provider:
             - lambda:InvokeFunction
           Resource: '*'
           
+	
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    usePoetry: false
+
 
 package:
   patterns:
@@ -21,8 +27,6 @@ package:
     - '!.python-version'
     - '!.git/**'
     - '!node_modules/**'
-    - '!poetry.lock'
-    - '!pyproject.toml'
     - '!package.json'
     - '!package-lock.json'
 
