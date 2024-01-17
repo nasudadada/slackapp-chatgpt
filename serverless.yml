@@ -5,6 +5,7 @@ provider:
   name: aws
   region: ap-northeast-1
   stage: dev
+  architecture: arm64
   iam:
     role:
       statements:
@@ -16,6 +17,7 @@ provider:
 	
 custom:
   pythonRequirements:
+    dockerImage: public.ecr.aws/sam/build-python3.9:latest-arm64
     dockerizePip: true
     usePoetry: false
 
