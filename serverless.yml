@@ -5,7 +5,6 @@ provider:
   name: aws
   region: ap-northeast-1
   stage: dev
-  architecture: arm64
   iam:
     role:
       statements:
@@ -13,24 +12,23 @@ provider:
           Action:
             - lambda:InvokeFunction
           Resource: '*'
-          
 	
 custom:
   pythonRequirements:
-    dockerImage: public.ecr.aws/sam/build-python3.9:latest-arm64
-    dockerizePip: true
     usePoetry: false
+    dockerizePip: true
+    dockerFile: build/Dockerfile
 
 
 package:
   patterns:
     - '!.env'
     - '!.gitignore'
-    - '!.python-version'
-    - '!.git/**'
+    - '!.venv/**'
     - '!node_modules/**'
     - '!package.json'
     - '!package-lock.json'
+
 
 functions:
   app:

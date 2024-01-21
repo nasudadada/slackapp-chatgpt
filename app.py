@@ -115,7 +115,7 @@ if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
 
 
-def hander(event, context):
+def handler(event, context):
     logger.info("handler called")
     header = event["headers"]
     logger.info(json.dumps(header))
