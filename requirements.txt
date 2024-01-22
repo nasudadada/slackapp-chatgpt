@@ -5,3 +5,5 @@ momento
 openai
 python-dotenv
 slack-bolt
+pinecone-client
+tiktoken
