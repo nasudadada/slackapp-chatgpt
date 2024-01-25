@@ -15,10 +15,12 @@ momento = "^1.16.0"
 boto3 = "^1.34.5"
 pinecone-client = "^3.0.1"
 tiktoken = "^0.5.2"
+
+
+[tool.poetry.group.dev.dependencies]
 unstructured = "^0.12.2"
 pdf2image = "^1.17.0"
 pdfminer-six = "^20231228"
-
 
 [build-system]
 requires = ["poetry-core"]
