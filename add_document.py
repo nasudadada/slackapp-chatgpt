@@ -4,10 +4,10 @@ import sys
 
 import pinecone
 from dotenv import load_dotenv
-from langchain.document_loaders import UnstructuredPDFLoader
+from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Pinecone
+from langchain_community.vectorstores import Pinecone
 
 load_dotenv()
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     raw_docs = loader.load()
     logger.info("Loaded %d documents", len(raw_docs))
 
-    text_splitter = CharacterTextSplitter(chan_size=300, chunk_overlap=30)
+    text_splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=30)
     docs = text_splitter.split_documents(raw_docs)
     logger.info("Split %d documents", len(raw_docs))
 
