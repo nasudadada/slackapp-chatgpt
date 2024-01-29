@@ -3,10 +3,13 @@ import logging
 import os
 import re
 import time
+
+from add_document import initialize_vectorstore
 from datetime import timedelta
 from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
+from langchain.chains import RetrievalQA
 from langchain.memory import MomentoChatMessageHistory
 from langchain.schema import HumanMessage, LLMResult, SystemMessage
 from slack_bolt import App
@@ -82,6 +85,8 @@ def handle_mention(event, say):
     result = say("\n\nTyping...", thread_ts=thread_ts)
     ts = result["ts"]
 
+    vector_store = initialize_vectorstore()
+
     history = MomentoChatMessageHistory.from_client_params(
         id_ts,
         os.environ["MOMENTO_CACHE"],
@@ -100,6 +105,10 @@ def handle_mention(event, say):
         streaming=True,
         callbacks=[callback],
     )
+
+    qa_chain = RetrievalQA.from_llm(llm=llm, retriever=vector_store.as_retriever())
+
+    qa_chain.run(message)
 
     ai_message = llm(messages)
     history.add_message(ai_message)
