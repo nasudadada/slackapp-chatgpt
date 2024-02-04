@@ -7,7 +7,7 @@ import time
 from add_document import initialize_vectorstore
 from datetime import timedelta
 from dotenv import load_dotenv
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import RetrievalQA
 from langchain.memory import MomentoChatMessageHistory
@@ -65,8 +65,8 @@ class SlackStreamingCallbackHandler(BaseCallbackHandler):
             {"type": "divider"},
             {
                 "type": "context",
-                "element": [{"type": "mrkdwn", "text": message_context}],
-            }
+                "elements": [{"type": "mrkdwn", "text": message_context}],
+            },
         ]
         app.client.chat_update(
             channel=self.channel, ts=self.ts, text=self.message, blocks=message_blocks

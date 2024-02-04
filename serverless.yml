@@ -22,7 +22,6 @@ custom:
 
 package:
   patterns:
-    - '!add_document.py'
     - '!.env'
     - '!.gitignore'
     - '!.venv/**'
